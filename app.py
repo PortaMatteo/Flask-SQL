@@ -26,21 +26,24 @@ def scelta():
         query = 'SELECT category_name,count(*) as numero_prodotti FROM production.categories INNER JOIN production.products ON categories.category_id = products.category_id GROUP BY category_name'
         tabella = pd.read_sql(query,conn)
         tabella.sort_values(by='numero_prodotti',ascending=False,inplace=True)
+        testo = "Numero di prodotti per ogni categoria"
 
     elif sceltaUtente == "es2":
         query = 'SELECT store_name,count(order_id) as numero_ordini FROM sales.orders INNER JOIN sales.stores ON orders.store_id = stores.store_id GROUP BY store_name'
         tabella = pd.read_sql(query,conn)
         tabella.sort_values(by='numero_ordini',ascending=False,inplace=True)
+        testo = "Numero di orrdini per ogni store"
         
     elif sceltaUtente == "es3":
         query = 'SELECT brand_name,count(*) as numero_prodotti FROM production.products INNER JOIN production.brands ON products.brand_id = brands.brand_id GROUP BY brand_name'
         tabella = pd.read_sql(query,conn)
         tabella.sort_values(by='numero_prodotti',ascending=False,inplace=True)
+        testo = "Il numero di prodotti per ogni store"
 
     else:
         return render_template("search.html")
 
-    return render_template("result.html", nomiColonne = tabella.columns.values, dati = tabella.values)
+    return render_template("result.html", nomiColonne = tabella.columns.values, dati = tabella.values, testo = testo)
 
 @app.route("/grafico.png", methods=["GET"])
 def visualizza():
@@ -73,7 +76,7 @@ def result():
     query = f"SELECT * FROM production.products WHERE product_name LIKE '{NomeProdotto}%'" 
     # Visualizzare le informazioni 
     dfProdotti = pd.read_sql(query,conn)
-    return render_template("result_search.html", tabella = dfProdotti.to_html(), nomiColonne = dfProdotti.columns.values, dati = dfProdotti.values)
+    return render_template("result_search.html", tabella = dfProdotti.to_html(), nomiColonne = dfProdotti.columns.values, dati = dfProdotti.values, ricerca = NomeProdotto)
 
 
 if __name__ == '__main__':
